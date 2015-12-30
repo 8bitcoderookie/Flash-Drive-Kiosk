@@ -12,12 +12,12 @@
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
-# limitations under the License. 
+# limitations under the License.
 #
 # Description:
-# This script makes a dd image (.img) file of DEVICE_NAME 
+# This script makes a dd image (.img) file of DEVICE_NAME
 # and saves it to the current directory
-# 
+#
 # Version 1.0
 
 BACKTITLE="Image von BRG4 Master-Lernstick erstellen"
@@ -33,12 +33,15 @@ then
 	RESPOSE=$?
 	if [ $RESPOSE = 0 ]
 	then
-		exec 3>&1 
+		exec 3>&1
 		NAME=$( dialog --title " Dateiname wählen " --backtitle "$BACKTITLE" --inputbox "\nBitte Dateiname für das Image eingeben\n(ohne Endung .img)\n " 11 50 2>&1 1>&3);
 		EXITCODE=$?;
 		exec 3>&-;
 		if [ "$EXITCODE" = "0" ]
 		then
+			if [[ "$NAME" != *.img ]]
+	    	NAME="$NAME.img"
+			fi
 			(pv -n /dev/$DEVICE_NAME | sudo dd of="$IMAGE_DIRECTORY$NAME" bs=4096 conv=notrunc,noerror) 2>&1 | dialog --title " Imagedatei erstellen " --backtitle "$BACKTITLE" --gauge "\nImage von Master-USB-Stick wird erstellt.\nBitte warten..." 11 70 0
 			dialog --title " Fertig! " --msgbox "\nName: $NAME" 6 60
 			dialog --title " Fertig! " --msgbox "\nKopiervorgang erfolgreich beendet." 7 38
@@ -47,4 +50,3 @@ then
 else
 	dialog --title " Kein USB-Stick " --backtitle "$BACKTITLE" --msgbox "\nEs konnte kein angesteckter USB-Stick gefunden werden.\nBitte versuche es bitte noch einmal..." 8 58
 fi
-
